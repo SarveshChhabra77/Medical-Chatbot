@@ -15,7 +15,7 @@ touch requirements.txt
 touch research/trials.ipynb
 
 
-
+## Printing the message 
 echo "Directory and files created successfully!"
 
 

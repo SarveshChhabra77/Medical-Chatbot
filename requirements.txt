@@ -1,0 +1,28 @@
+# Core
+langchain==0.3.26
+langchain-core==0.3.66
+langchain-community==0.3.26
+
+# Integrations
+langchain-google-genai==2.0.5
+langchain-pinecone==0.2.8
+langchain-huggingface==0.1.2
+
+# Embeddings
+sentence-transformers==4.1.0
+transformers==4.41.2
+
+# PDF Loader
+pypdf==5.6.1
+
+# Backend
+flask==3.1.1
+
+# Environment
+python-dotenv==1.1.0
+
+# Utilities
+numpy==1.26.4
+tqdm==4.66.4
+
+-e .

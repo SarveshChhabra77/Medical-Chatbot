@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Medical AI Assistant</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+<link rel="stylesheet"
+href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="light-theme">
+
+<div class="background"></div>
+
+<div class="chat-app">
+
+    <!-- HEADER -->
+    <div class="chat-header">
+        <div class="header-icon">
+            <i class="fas fa-stethoscope"></i>
+        </div>
+        Medical AI Assistant
+
+        <div class="header-right">
+            <button id="themeToggle" class="theme-btn">
+                <i class="fas fa-sun"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- CHAT BODY -->
+    <div id="messageFormeight" class="chat-body"></div>
+
+    <!-- INPUT -->
+    <div class="chat-input">
+        <form id="messageArea">
+            <input id="text" name="msg"
+                placeholder="Ask anything about health..."
+                autocomplete="off" required>
+            <button type="submit">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </form>
+    </div>
+
+</div>
+
+<!-- SOUND -->
+<audio id="msgSound"
+src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3"></audio>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<script>
+
+/* =====================
+   THEME TOGGLE
+===================== */
+
+const themeToggle=document.getElementById('themeToggle');
+let currentTheme=localStorage.getItem('theme')||'light';
+
+function initTheme(){
+    document.body.className=currentTheme+'-theme';
+    themeToggle.querySelector('i').className=
+        currentTheme==='dark'?'fas fa-moon':'fas fa-sun';
+}
+
+themeToggle.addEventListener('click',()=>{
+    currentTheme=currentTheme==='light'?'dark':'light';
+    localStorage.setItem('theme',currentTheme);
+    initTheme();
+});
+
+/* =====================
+   GREETING LOGIC
+===================== */
+
+function getGreeting(){
+    let h=new Date().getHours();
+    if(h<12) return "Good morning ☀️";
+    if(h<18) return "Good afternoon 🌤️";
+    return "Good evening 🌙";
+}
+
+/* =====================
+   TYPING INDICATOR
+===================== */
+
+function showTyping(){
+return `
+<div class="message bot typing" id="typing">
+<div class="avatar"><i class="fas fa-robot"></i></div>
+<div class="bubble">
+<div class="dots">
+<div class="dot"></div>
+<div class="dot"></div>
+<div class="dot"></div>
+</div>
+</div>
+</div>`;
+}
+
+/* =====================
+   STREAM TEXT EFFECT
+===================== */
+
+function streamText(element,text,speed=25){
+let i=0;
+let cursor='<span class="cursor">|</span>';
+
+let interval=setInterval(()=>{
+element.html(text.substring(0,i)+cursor);
+i++;
+
+if(i>text.length){
+clearInterval(interval);
+element.html(text);
+document.getElementById("msgSound").play().catch(()=>{});
+}
+},speed);
+}
+
+/* =====================
+   WELCOME MESSAGE
+===================== */
+
+function welcomeMessage(){
+
+let greeting=getGreeting();
+
+$("#messageFormeight").append(showTyping());
+
+setTimeout(()=>{
+
+$("#typing").remove();
+
+let welcomeMsg=`
+<strong>Hello 👋</strong><br><br>
+${greeting}!<br>
+How can I help you today?<br><br>
+<em>You can ask about symptoms, medicines, or general health advice.</em>
+`;
+
+$("#messageFormeight").append(`
+<div class="message bot">
+<div class="avatar"><i class="fas fa-robot"></i></div>
+<div class="bubble" id="welcomeText"></div>
+</div>`);
+
+streamText($("#welcomeText"),welcomeMsg);
+
+scrollBottom();
+
+},1200);
+}
+
+/* =====================
+   SCROLL
+===================== */
+
+function scrollBottom(){
+const chat=document.querySelector(".chat-body");
+chat.scrollTo({
+top:chat.scrollHeight,
+behavior:"smooth"
+});
+}
+
+/* =====================
+   PAGE LOAD
+===================== */
+
+$(document).ready(function(){
+
+initTheme();
+
+/* ALWAYS SHOW GREETING */
+setTimeout(welcomeMessage,800);
+
+});
+
+/* =====================
+   USER MESSAGE
+===================== */
+
+$("#messageArea").on("submit",function(event){
+
+event.preventDefault();
+
+let rawText=$("#text").val().trim();
+if(!rawText) return;
+
+$("#messageFormeight").append(`
+<div class="message user">
+<div class="bubble">${rawText}</div>
+<div class="avatar"><i class="fas fa-user"></i></div>
+</div>`);
+
+$("#text").val("");
+
+scrollBottom();
+
+$("#messageFormeight").append(showTyping());
+
+$.ajax({
+data:{msg:rawText},
+type:"POST",
+url:"/get",
+}).done(function(data){
+
+$("#typing").remove();
+
+$("#messageFormeight").append(`
+<div class="message bot">
+<div class="avatar"><i class="fas fa-robot"></i></div>
+<div class="bubble response"></div>
+</div>`);
+
+streamText($(".response").last(),data);
+scrollBottom();
+
+}).fail(function(){
+
+$("#typing").remove();
+
+$("#messageFormeight").append(`
+<div class="message bot">
+<div class="avatar"><i class="fas fa-robot"></i></div>
+<div class="bubble">⚠️ Something went wrong. Please try again.</div>
+</div>`);
+
+scrollBottom();
+});
+
+});
+
+</script>
+</body>
+</html>
