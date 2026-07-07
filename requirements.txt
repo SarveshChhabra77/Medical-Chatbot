@@ -3,11 +3,12 @@ python-dotenv==1.1.0
 
 # ===== LangChain =====
 langchain==0.3.26
-langchain-core==0.3.66
+langchain-core==0.3.86
 langchain-community==0.3.26
 langchain-google-genai==2.0.5
 langchain-huggingface==0.1.2
 langchain-pinecone>=0.2.0,<0.3
+langchain-groq==0.3.8
 
 # ===== Embeddings =====
 sentence-transformers==4.1.0
