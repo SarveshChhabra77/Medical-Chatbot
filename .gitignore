@@ -1,2 +1,4 @@
 medibot
 .env
+__pycache__/
+*.pyc

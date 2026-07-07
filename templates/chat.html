@@ -1,244 +1,357 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Medical AI Assistant</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-
-<link rel="stylesheet"
-href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <title>MediBot AI | Premium Medical Assistant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Premium Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 
 <body class="light-theme">
 
-<div class="background"></div>
-
-<div class="chat-app">
-
-    <!-- HEADER -->
-    <div class="chat-header">
-        <div class="header-icon">
-            <i class="fas fa-stethoscope"></i>
-        </div>
-        Medical AI Assistant
-
-        <div class="header-right">
-            <button id="themeToggle" class="theme-btn">
-                <i class="fas fa-sun"></i>
-            </button>
-        </div>
+    <!-- Glowing Background blobs -->
+    <div class="glow-bg-container">
+        <div class="glow-blob blob-1"></div>
+        <div class="glow-blob blob-2"></div>
+        <div class="glow-blob blob-3"></div>
     </div>
 
-    <!-- CHAT BODY -->
-    <div id="messageFormeight" class="chat-body"></div>
+    <!-- MAIN APP CONTAINER -->
+    <div class="app-layout">
+        
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+                <div class="brand-info">
+                    <h2>MediBot AI</h2>
+                    <span class="status-indicator">
+                        <span class="pulse-dot"></span>
+                        RAG System Online
+                    </span>
+                </div>
+                <button class="mobile-close-btn" id="mobileCloseBtn">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
 
-    <!-- INPUT -->
-    <div class="chat-input">
-        <form id="messageArea">
-            <input id="text" name="msg"
-                placeholder="Ask anything about health..."
-                autocomplete="off" required>
-            <button type="submit">
-                <i class="fas fa-paper-plane"></i>
-            </button>
-        </form>
+            <!-- Navigation / Info section -->
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">Session Details</div>
+                <div class="session-card">
+                    <div class="session-icon">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div class="session-desc">
+                        <h4>Secure Session</h4>
+                        <p>End-to-end encrypted medical inquiry</p>
+                    </div>
+                </div>
+
+                <div class="nav-section-title">Quick Action Suggestions</div>
+                <div class="suggestions-list">
+                    <button class="suggestion-chip" data-query="What are the main symptoms of seasonal allergies?">
+                        <i class="fa-solid fa-stethoscope"></i> Allergy Symptoms
+                    </button>
+                    <button class="suggestion-chip" data-query="How does high blood pressure affect the body?">
+                        <i class="fa-solid fa-heart"></i> Blood Pressure Info
+                    </button>
+                    <button class="suggestion-chip" data-query="What is the difference between a cold and flu?">
+                        <i class="fa-solid fa-snowflake"></i> Cold vs. Flu
+                    </button>
+                    <button class="suggestion-chip" data-query="Explain the health benefits of regular cardio exercise.">
+                        <i class="fa-solid fa-running"></i> Exercise Benefits
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Disclaimer section -->
+            <div class="sidebar-footer">
+                <div class="disclaimer-box">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    <p><strong>Disclaimer:</strong> This assistant provides information based on medical documents. It is NOT a substitute for professional medical advice, diagnosis, or treatment.</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="main-chat">
+            
+            <!-- HEADER -->
+            <header class="chat-header">
+                <div class="header-left">
+                    <button class="sidebar-toggle" id="sidebarToggle">
+                        <i class="fa-solid fa-bars-staggered"></i>
+                    </button>
+                    <div class="header-title-wrapper">
+                        <h1>Medical AI Consultation</h1>
+                        <p class="subtitle">Powered by Llama-3 & RAG Knowledge Base</p>
+                    </div>
+                </div>
+
+                <div class="header-right">
+                    <button id="themeToggle" class="theme-btn" aria-label="Toggle Theme">
+                        <i class="fa-solid fa-sun"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- CHAT BODY / MESSAGES -->
+            <div id="messageFormeight" class="chat-body">
+                <!-- Welcome/Intro layout shown inside chat body initially -->
+                <div class="welcome-intro" id="welcomeIntro">
+                    <div class="intro-icon">
+                        <i class="fa-solid fa-notes-medical animate-float"></i>
+                    </div>
+                    <h2>Welcome to MediBot AI</h2>
+                    <p>Your secure, intelligent assistant for analyzing symptoms, clarifying medical terms, and exploring health guides.</p>
+                    
+                    <div class="intro-grid">
+                        <div class="intro-card" data-query="How can I prevent dehydration in summer?">
+                            <i class="fa-solid fa-glass-water"></i>
+                            <h4>Prevent Dehydration</h4>
+                            <p>Tips and guidelines for staying hydrated.</p>
+                        </div>
+                        <div class="intro-card" data-query="What are common lifestyle tips for a healthy heart?">
+                            <i class="fa-solid fa-heart-pulse"></i>
+                            <h4>Heart Health Tips</h4>
+                            <p>Best foods and exercise routines for cardiovascular care.</p>
+                        </div>
+                        <div class="intro-card" data-query="What are standard remedies for migraine headaches?">
+                            <i class="fa-solid fa-brain"></i>
+                            <h4>Migraine Remedies</h4>
+                            <p>Home solutions and clinical care suggestions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHAT INPUT -->
+            <div class="chat-input-container">
+                <form id="messageArea" class="chat-input-form">
+                    <div class="input-wrapper">
+                        <input id="text" name="msg" 
+                               placeholder="Ask anything about health, symptoms, or remedies..." 
+                               autocomplete="off" required>
+                        <span class="input-focus-effect"></span>
+                    </div>
+                    <button type="submit" id="sendBtn" class="send-btn" aria-label="Send Message">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+            
+        </main>
     </div>
 
-</div>
+    <!-- AUDIO NOTIFICATION -->
+    <audio id="msgSound" src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3" preload="auto"></audio>
 
-<!-- SOUND -->
-<audio id="msgSound"
-src="https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3"></audio>
+    <!-- Scripts -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        // Set up marked configuration for clean rendering
+        marked.setOptions({
+            breaks: true,
+            gfm: true
+        });
 
-<script>
+        /* =====================
+           THEME TOGGLE
+        ===================== */
+        const themeToggle = document.getElementById('themeToggle');
+        let currentTheme = localStorage.getItem('theme') || 'light';
 
-/* =====================
-   THEME TOGGLE
-===================== */
+        function initTheme() {
+            document.body.className = currentTheme + '-theme';
+            const icon = themeToggle.querySelector('i');
+            if (currentTheme === 'dark') {
+                icon.className = 'fa-solid fa-moon';
+            } else {
+                icon.className = 'fa-solid fa-sun';
+            }
+        }
 
-const themeToggle=document.getElementById('themeToggle');
-let currentTheme=localStorage.getItem('theme')||'light';
+        themeToggle.addEventListener('click', () => {
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            initTheme();
+        });
 
-function initTheme(){
-    document.body.className=currentTheme+'-theme';
-    themeToggle.querySelector('i').className=
-        currentTheme==='dark'?'fas fa-moon':'fas fa-sun';
-}
+        /* =====================
+           SIDEBAR TOGGLES
+        ===================== */
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const mobileCloseBtn = document.getElementById('mobileCloseBtn');
 
-themeToggle.addEventListener('click',()=>{
-    currentTheme=currentTheme==='light'?'dark':'light';
-    localStorage.setItem('theme',currentTheme);
-    initTheme();
-});
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.add('active');
+        });
 
-/* =====================
-   GREETING LOGIC
-===================== */
+        mobileCloseBtn.addEventListener('click', () => {
+            sidebar.classList.remove('active');
+        });
 
-function getGreeting(){
-    let h=new Date().getHours();
-    if(h<12) return "Good morning ☀️";
-    if(h<18) return "Good afternoon 🌤️";
-    return "Good evening 🌙";
-}
+        // Close sidebar when clicking outside of it on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 992) {
+                if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target) && sidebar.classList.contains('active')) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
 
-/* =====================
-   TYPING INDICATOR
-===================== */
+        /* =====================
+           GREETING LOGIC
+        ===================== */
+        function getGreeting() {
+            let h = new Date().getHours();
+            if (h < 12) return "Good morning ☀️";
+            if (h < 18) return "Good afternoon 🌤️";
+            return "Good evening 🌙";
+        }
 
-function showTyping(){
-return `
-<div class="message bot typing" id="typing">
-<div class="avatar"><i class="fas fa-robot"></i></div>
-<div class="bubble">
-<div class="dots">
-<div class="dot"></div>
-<div class="dot"></div>
-<div class="dot"></div>
-</div>
-</div>
-</div>`;
-}
+        /* =====================
+           TYPING INDICATOR
+        ===================== */
+        function showTyping() {
+            return `
+            <div class="message bot typing" id="typing">
+                <div class="avatar"><i class="fa-solid fa-heart-pulse"></i></div>
+                <div class="bubble">
+                    <div class="dots">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                </div>
+            </div>`;
+        }
 
-/* =====================
-   STREAM TEXT EFFECT
-===================== */
+        /* =====================
+           STREAM TEXT EFFECT
+        ===================== */
+        function streamText(element, text, speed = 15) {
+            let i = 0;
+            let cursor = '<span class="cursor">|</span>';
+            element.html('');
+            
+            let interval = setInterval(() => {
+                let currentText = text.substring(0, i);
+                element.html(marked.parse(currentText) + cursor);
+                i++;
 
-function streamText(element,text,speed=25){
-let i=0;
-let cursor='<span class="cursor">|</span>';
+                if (i > text.length) {
+                    clearInterval(interval);
+                    element.html(marked.parse(text));
+                    document.getElementById("msgSound").play().catch(() => {});
+                }
+                scrollBottom();
+            }, speed);
+        }
 
-let interval=setInterval(()=>{
-element.html(text.substring(0,i)+cursor);
-i++;
+        /* =====================
+           SCROLL
+        ===================== */
+        function scrollBottom() {
+            const chat = document.querySelector(".chat-body");
+            chat.scrollTo({
+                top: chat.scrollHeight,
+                behavior: "smooth"
+            });
+        }
 
-if(i>text.length){
-clearInterval(interval);
-element.html(text);
-document.getElementById("msgSound").play().catch(()=>{});
-}
-},speed);
-}
+        /* =====================
+           PAGE LOAD
+        ===================== */
+        $(document).ready(function() {
+            initTheme();
+            
+            // Suggestion chips and cards click actions
+            $(document).on("click", ".suggestion-chip, .intro-card", function() {
+                let query = $(this).attr("data-query");
+                if (query) {
+                    $("#text").val(query);
+                    $("#messageArea").submit();
+                }
+            });
+        });
 
-/* =====================
-   WELCOME MESSAGE
-===================== */
+        /* =====================
+           SUBMIT MESSAGE
+        ===================== */
+        $("#messageArea").on("submit", function(event) {
+            event.preventDefault();
 
-function welcomeMessage(){
+            let rawText = $("#text").val().trim();
+            if (!rawText) return;
 
-let greeting=getGreeting();
+            // Remove welcome intro if still visible
+            $("#welcomeIntro").fadeOut(300, function() {
+                $(this).remove();
+            });
 
-$("#messageFormeight").append(showTyping());
+            // Append user message
+            $("#messageFormeight").append(`
+                <div class="message user">
+                    <div class="bubble">${rawText}</div>
+                    <div class="avatar"><i class="fa-solid fa-user-doctor"></i></div>
+                </div>
+            `);
 
-setTimeout(()=>{
+            $("#text").val("");
+            scrollBottom();
 
-$("#typing").remove();
+            // Append typing indicator
+            $("#messageFormeight").append(showTyping());
+            scrollBottom();
 
-let welcomeMsg=`
-<strong>Hello 👋</strong><br><br>
-${greeting}!<br>
-How can I help you today?<br><br>
-<em>You can ask about symptoms, medicines, or general health advice.</em>
-`;
+            // Send AJAX
+            $.ajax({
+                data: { msg: rawText },
+                type: "POST",
+                url: "/get",
+            }).done(function(data) {
+                $("#typing").remove();
 
-$("#messageFormeight").append(`
-<div class="message bot">
-<div class="avatar"><i class="fas fa-robot"></i></div>
-<div class="bubble" id="welcomeText"></div>
-</div>`);
+                let botResponseId = "bot-resp-" + Date.now();
+                $("#messageFormeight").append(`
+                    <div class="message bot">
+                        <div class="avatar"><i class="fa-solid fa-heart-pulse"></i></div>
+                        <div class="bubble response-text" id="${botResponseId}"></div>
+                    </div>
+                `);
 
-streamText($("#welcomeText"),welcomeMsg);
+                streamText($(`#${botResponseId}`), data);
 
-scrollBottom();
+            }).fail(function() {
+                $("#typing").remove();
 
-},1200);
-}
+                $("#messageFormeight").append(`
+                    <div class="message bot error-msg">
+                        <div class="avatar"><i class="fa-solid fa-heart-pulse"></i></div>
+                        <div class="bubble">⚠️ Sorry, I ran into an issue retrieving that. Please try again.</div>
+                    </div>
+                `);
+                scrollBottom();
+            });
+        });
 
-/* =====================
-   SCROLL
-===================== */
-
-function scrollBottom(){
-const chat=document.querySelector(".chat-body");
-chat.scrollTo({
-top:chat.scrollHeight,
-behavior:"smooth"
-});
-}
-
-/* =====================
-   PAGE LOAD
-===================== */
-
-$(document).ready(function(){
-
-initTheme();
-
-/* ALWAYS SHOW GREETING */
-setTimeout(welcomeMessage,800);
-
-});
-
-/* =====================
-   USER MESSAGE
-===================== */
-
-$("#messageArea").on("submit",function(event){
-
-event.preventDefault();
-
-let rawText=$("#text").val().trim();
-if(!rawText) return;
-
-$("#messageFormeight").append(`
-<div class="message user">
-<div class="bubble">${rawText}</div>
-<div class="avatar"><i class="fas fa-user"></i></div>
-</div>`);
-
-$("#text").val("");
-
-scrollBottom();
-
-$("#messageFormeight").append(showTyping());
-
-$.ajax({
-data:{msg:rawText},
-type:"POST",
-url:"/get",
-}).done(function(data){
-
-$("#typing").remove();
-
-$("#messageFormeight").append(`
-<div class="message bot">
-<div class="avatar"><i class="fas fa-robot"></i></div>
-<div class="bubble response"></div>
-</div>`);
-
-streamText($(".response").last(),data);
-scrollBottom();
-
-}).fail(function(){
-
-$("#typing").remove();
-
-$("#messageFormeight").append(`
-<div class="message bot">
-<div class="avatar"><i class="fas fa-robot"></i></div>
-<div class="bubble">⚠️ Something went wrong. Please try again.</div>
-</div>`);
-
-scrollBottom();
-});
-
-});
-
-</script>
+    </script>
 </body>
 </html>
