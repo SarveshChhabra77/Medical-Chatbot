@@ -53,7 +53,3 @@ def download_embedding():
     model_name="sentence-transformers/all-MiniLM-L6-v2"
 )
     return embeddings
-
-
-
-embedding = download_embedding()
